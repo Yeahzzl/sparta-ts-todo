@@ -1,21 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
-import uuid from "react-uuid";
+import { v4 as uuidv4 } from "uuid";
 
 const initialState = [
   {
-    id: uuid(),
+    id: uuidv4(),
     title: "리덕스툴킷",
     contents: "복습하기",
     isDone: false,
   },
   {
-    id: uuid(),
+    id: uuidv4(),
     title: "리액트쿼리",
     contents: "강의듣기",
     isDone: true,
   },
   {
-    id: uuid(),
+    id: uuidv4(),
     title: "타입스크립트",
     contents: "공부하기",
     isDone: false,
