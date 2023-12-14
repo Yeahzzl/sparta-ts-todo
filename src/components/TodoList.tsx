@@ -3,16 +3,38 @@ import { useDispatch, useSelector } from "react-redux";
 import { styled } from "styled-components";
 import { deleteTodo, switchTodo } from "../redux/modules/todoSlice";
 import { RootState } from "../redux/config/configStore";
+import { todoData } from "../types/Type";
+import Swal from "sweetalert2";
 
-const TodoList = ({ isActive }: { isActive: any }) => {
+const TodoList = ({ isActive }: { isActive: boolean }) => {
   const dispatch = useDispatch();
-  const todos = useSelector((state: RootState): any => state.todoSlice);
+  const todos: todoData[] = useSelector(
+    (state: RootState): todoData[] => state.todoSlice
+  );
 
-  const deleteButtonHandler = (id: string) => {
-    dispatch(deleteTodo(id));
+  const deleteButtonHandler = (id: string): void => {
+    Swal.fire({
+      title: "정말로 삭제하시겠습니까?",
+      text: "삭제하면 되돌릴 수 없습니다",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ffc76c",
+      cancelButtonColor: "#9079a4",
+      confirmButtonText: "Yes",
+    }).then((result): void => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "삭제되었습니다",
+          icon: "success",
+        });
+        dispatch(deleteTodo(id));
+      } else {
+        return;
+      }
+    });
   };
 
-  const switchButtonHandler = (id: string) => {
+  const switchButtonHandler = (id: string): void => {
     dispatch(switchTodo(id));
   };
   return (
@@ -21,10 +43,10 @@ const TodoList = ({ isActive }: { isActive: any }) => {
         <StListTitle>{isActive ? "Done🙆🏻‍♀️" : "Working🙅🏻‍♀️"}</StListTitle>
         <StTodoWrap>
           {todos
-            ?.filter((todo: any): boolean => {
+            ?.filter((todo: todoData): boolean => {
               return todo.isDone === isActive;
             })
-            .map((todo: any) => {
+            .map((todo: todoData) => {
               return (
                 <StTodoBox key={todo.id}>
                   <StTitle>{todo.title}</StTitle>
@@ -57,20 +79,26 @@ const TodoList = ({ isActive }: { isActive: any }) => {
 };
 
 const StContainer = styled.div`
-  width: 100vw;
+  width: 100%;
   height: 100%;
-  margin: 50px;
-  /* background-color: gray; */
+  padding: 50px 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 `;
 
 const StListTitle = styled.h1`
   font-size: 30px;
-  text-align: left;
+  text-align: center;
 `;
 
 const StTodoWrap = styled.div`
-  display: flex;
+  width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  place-items: center;
   gap: 50px;
+  margin: 20px auto 20px auto;
 `;
 const StTodoBox = styled.div`
   width: 250px;
@@ -78,6 +106,7 @@ const StTodoBox = styled.div`
   background-color: #f9dfa7;
   padding: 10px 20px;
   border-radius: 10px;
+  flex-wrap: wrap;
 `;
 
 const StTitle = styled.h2`
@@ -99,11 +128,11 @@ const StButtonWrap = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 30px;
+  gap: 10px;
 `;
 const Button = styled.button`
   width: 100px;
-  height: 25px;
+  height: 28px;
   border-style: none;
   background-color: white;
   border-radius: 5px;
