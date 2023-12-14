@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
+import { todoData } from "../../types/Type";
 
-const initialState = [
+const initialState: todoData[] = [
   {
     id: uuidv4(),
     title: "리덕스툴킷",
@@ -26,14 +27,16 @@ const todoSlice = createSlice({
   name: "todos",
   initialState,
   reducers: {
-    addTodo: (state, action) => {
+    addTodo: (state: todoData[], action) => {
       return [...state, action.payload];
     },
-    deleteTodo: (state, action) => {
-      return state.filter((item) => item.id !== action.payload);
+    deleteTodo: (state: todoData[], action): todoData[] => {
+      return state.filter(
+        (item: todoData): boolean => item.id !== action.payload
+      );
     },
-    switchTodo: (state, action) => {
-      return state.map((item) => {
+    switchTodo: (state: todoData[], action): todoData[] => {
+      return state.map((item: todoData): todoData => {
         if (item.id === action.payload) {
           return { ...item, isDone: !item.isDone };
         } else {
