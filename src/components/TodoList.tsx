@@ -128,16 +128,17 @@ const StButtonWrap = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 10px;
+  gap: 20px;
 `;
 const Button = styled.button`
-  width: 100px;
+  width: 120px;
   height: 28px;
   border-style: none;
   background-color: white;
   border-radius: 5px;
+  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.2);
   &:hover {
-    background-color: #676767;
+    background-color: #9079a4;
     color: white;
   }
 `;

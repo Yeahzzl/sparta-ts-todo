@@ -118,7 +118,7 @@ const StButton = styled.button`
   height: 40px;
   border-radius: 10px;
   &:hover {
-    background-color: #ffd16d;
+    background-color: #f9dfa7;
     color: white;
   }
 `;
