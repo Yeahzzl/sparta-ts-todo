@@ -5,6 +5,7 @@ import { deleteTodo, switchTodo } from "../redux/modules/todoSlice";
 import { RootState } from "../redux/config/configStore";
 import { todoData } from "../types/Type";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const TodoList = ({ isActive }: { isActive: boolean }) => {
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ const TodoList = ({ isActive }: { isActive: boolean }) => {
           title: "삭제되었습니다",
           icon: "success",
         });
+        axios.delete(`http://localhost:4000/todos/${id}`);
         dispatch(deleteTodo(id));
       } else {
         return;
@@ -34,9 +36,26 @@ const TodoList = ({ isActive }: { isActive: boolean }) => {
     });
   };
 
-  const switchButtonHandler = (id: string): void => {
-    dispatch(switchTodo(id));
+  const switchButtonHandler = async (id: string): Promise<void> => {
+    try {
+      const currentSwitchTodo = todos.find(
+        (todo: todoData): boolean => todo.id === id
+      );
+      if (!currentSwitchTodo) {
+        console.error("not found");
+        return;
+      }
+      const currentIsDone: boolean = currentSwitchTodo.isDone;
+
+      await axios.patch(`http://localhost:4000/todos/${id}`, {
+        isDone: !currentIsDone,
+      });
+      dispatch(switchTodo(id));
+    } catch (error) {
+      console.log("Error toggling todo", error);
+    }
   };
+
   return (
     <div>
       <StContainer>
@@ -46,7 +65,7 @@ const TodoList = ({ isActive }: { isActive: boolean }) => {
             ?.filter((todo: todoData): boolean => {
               return todo.isDone === isActive;
             })
-            .map((todo: todoData) => {
+            ?.map((todo: todoData) => {
               return (
                 <StTodoBox key={todo.id}>
                   <StTitle>{todo.title}</StTitle>

@@ -3,10 +3,12 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { styled } from "styled-components";
 import { addTodo } from "../redux/modules/todoSlice";
+// @ts-ignore
 import { v4 as uuidv4 } from "uuid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const Input = () => {
   const [title, setTitle] = useState<string>("");
@@ -25,7 +27,9 @@ const Input = () => {
     setContents(event.target.value);
   };
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const onSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
 
     if (!title) {
@@ -42,15 +46,20 @@ const Input = () => {
       contents,
       isDone: false,
     };
-    dispatch(addTodo(newTodo));
+    try {
+      await axios.post("http://localhost:4000/todos", newTodo);
+      dispatch(addTodo(newTodo));
 
-    Swal.fire({
-      title: "등록되었습니다",
-      icon: "success",
-    });
+      Swal.fire({
+        title: "등록되었습니다",
+        icon: "success",
+      });
 
-    setTitle("");
-    setContents("");
+      setTitle("");
+      setContents("");
+    } catch (error) {
+      console.log("add error", error);
+    }
   };
 
   return (
