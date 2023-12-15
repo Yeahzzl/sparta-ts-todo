@@ -1,17 +1,41 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { styled } from "styled-components";
-import { deleteTodo, switchTodo } from "../redux/modules/todoSlice";
-import { RootState } from "../redux/config/configStore";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { todoData } from "../types/Type";
 import Swal from "sweetalert2";
-import axios from "axios";
+import { deleteTodos, fetchTodos, updateTodos } from "../apis/todo";
+import Loading from "./Loading";
 
 const TodoList = ({ isActive }: { isActive: boolean }) => {
-  const dispatch = useDispatch();
-  const todos: todoData[] = useSelector(
-    (state: RootState): todoData[] => state.todoSlice
-  );
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["fetchTodoList"],
+    queryFn: fetchTodos,
+    staleTime: 3000,
+  });
+
+  const queryClient = useQueryClient();
+
+  const deleteMutate = useMutation({
+    mutationFn: deleteTodos,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fetchTodoList"] });
+    },
+  });
+
+  const updateMutate = useMutation({
+    mutationFn: updateTodos,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fetchTodoList"] });
+    },
+  });
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError) {
+    return <h2>🙇🏻‍♀️ 리스트를 불러오지 못했습니다 </h2>;
+  }
 
   const deleteButtonHandler = (id: string): void => {
     Swal.fire({
@@ -28,32 +52,22 @@ const TodoList = ({ isActive }: { isActive: boolean }) => {
           title: "삭제되었습니다",
           icon: "success",
         });
-        axios.delete(`http://localhost:4000/todos/${id}`);
-        dispatch(deleteTodo(id));
+
+        deleteMutate.mutate(id);
       } else {
         return;
       }
     });
   };
 
-  const switchButtonHandler = async (id: string): Promise<void> => {
-    try {
-      const currentSwitchTodo = todos.find(
-        (todo: todoData): boolean => todo.id === id
-      );
-      if (!currentSwitchTodo) {
-        console.error("not found");
-        return;
-      }
-      const currentIsDone: boolean = currentSwitchTodo.isDone;
-
-      await axios.patch(`http://localhost:4000/todos/${id}`, {
-        isDone: !currentIsDone,
-      });
-      dispatch(switchTodo(id));
-    } catch (error) {
-      console.log("Error toggling todo", error);
-    }
+  const switchButtonHandler = ({
+    id,
+    isDone,
+  }: {
+    id: string;
+    isDone: boolean;
+  }): void => {
+    updateMutate.mutate({ id, isDone });
   };
 
   return (
@@ -61,20 +75,20 @@ const TodoList = ({ isActive }: { isActive: boolean }) => {
       <StContainer>
         <StListTitle>{isActive ? "Done🙆🏻‍♀️" : "Working🙅🏻‍♀️"}</StListTitle>
         <StTodoWrap>
-          {todos
+          {data
             ?.filter((todo: todoData): boolean => {
               return todo.isDone === isActive;
             })
-            ?.map((todo: todoData) => {
+            ?.map(({ id, title, contents, isDone }: todoData) => {
               return (
-                <StTodoBox key={todo.id}>
-                  <StTitle>{todo.title}</StTitle>
-                  <Stcontent>{todo.contents}</Stcontent>
+                <StTodoBox key={id}>
+                  <StTitle>{title}</StTitle>
+                  <Stcontent>{contents}</Stcontent>
                   <StButtonWrap>
                     <Button
                       type="button"
                       onClick={() => {
-                        switchButtonHandler(todo.id);
+                        switchButtonHandler({ id, isDone });
                       }}
                     >
                       {isActive ? "취소" : "완료"}
@@ -82,7 +96,7 @@ const TodoList = ({ isActive }: { isActive: boolean }) => {
                     <Button
                       type="button"
                       onClick={() => {
-                        deleteButtonHandler(todo.id);
+                        deleteButtonHandler(id);
                       }}
                     >
                       삭제

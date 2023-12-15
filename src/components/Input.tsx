@@ -1,19 +1,26 @@
 import React from "react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { styled } from "styled-components";
-import { addTodo } from "../redux/modules/todoSlice";
 // @ts-ignore
 import { v4 as uuidv4 } from "uuid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-import axios from "axios";
+import { addTodos } from "../apis/todo";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { todoData } from "../types/Type";
 
 const Input = () => {
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState<string>("");
   const [contents, setContents] = useState<string>("");
-  const dispatch = useDispatch();
+
+  const addMutate = useMutation({
+    mutationFn: addTodos,
+    onSuccess: (): void => {
+      queryClient.invalidateQueries({ queryKey: ["fetchTodoList"] });
+    },
+  });
 
   const titleChangeHandler = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -40,26 +47,22 @@ const Input = () => {
       toast("내용을 입력해주세요");
       return;
     }
-    const newTodo = {
+    const newTodo: todoData = {
       id: uuidv4(),
       title,
       contents,
       isDone: false,
     };
-    try {
-      await axios.post("http://localhost:4000/todos", newTodo);
-      dispatch(addTodo(newTodo));
 
-      Swal.fire({
-        title: "등록되었습니다",
-        icon: "success",
-      });
+    addMutate.mutate(newTodo);
 
-      setTitle("");
-      setContents("");
-    } catch (error) {
-      console.log("add error", error);
-    }
+    Swal.fire({
+      title: "등록되었습니다",
+      icon: "success",
+    });
+
+    setTitle("");
+    setContents("");
   };
 
   return (
