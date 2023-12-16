@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-# Typescript과제
-
-## 기간 : 12월 12일 ~ 18일
-
-## Level-5
-
-- Redux를 react-query로 리팩토링
-
-### Keyword
-
-- query
-=======
 # Typescript과제 
 
 ## 기간 : 12월 12일 ~ 18일
@@ -22,4 +9,3 @@
 
 ### Keyword
 - DB
->>>>>>> ddc668a1138c0dc57d9b8f20094c484036f549b9
