@@ -10,7 +10,7 @@
       "id": "75bff436-624f-4b50-87c4-493fb99a4b2d",
       "title": "리덕스",
       "contents": "툴킷 연습하기",
-      "isDone": false
+      "isDone": true
     },
     {
       "id": "7464d130-1e68-4ab8-8d40-cb3eeb7e7dc1",
@@ -22,7 +22,7 @@
       "id": "4e25773e-40a5-4cd2-9258-d6157c8a62e5",
       "title": "타입스크립트 과제",
       "contents": "Level-2 끝내기",
-      "isDone": true
+      "isDone": false
     },
     {
       "id": "e3dd41d7-624f-4861-bf1f-f08b72bf8a7f",
