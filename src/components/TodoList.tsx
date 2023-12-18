@@ -10,6 +10,7 @@ const TodoList = ({ isActive }: { isActive: boolean }) => {
   const { isLoading, isError, data } = useQuery({
     queryKey: ["fetchTodoList"],
     queryFn: fetchTodos,
+    refetchOnWindowFocus: false,
     staleTime: 3000,
   });
 

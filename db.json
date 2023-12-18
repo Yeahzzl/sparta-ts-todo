@@ -29,6 +29,12 @@
       "title": "리액트",
       "contents": "쿼리 강의듣기",
       "isDone": true
+    },
+    {
+      "id": "15713231-e1b1-4002-96b7-23ace676afa2",
+      "title": "타입스크립트",
+      "contents": "과제제출",
+      "isDone": false
     }
   ]
 }

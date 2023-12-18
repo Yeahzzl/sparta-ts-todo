@@ -3,7 +3,9 @@ import { todoData } from "../types/Type";
 
 // 가져오기
 const fetchTodos = async (): Promise<todoData[]> => {
-  const response = await axios.get<todoData[]>("http://localhost:4000/todos");
+  const response = await axios.get<todoData[]>(
+    `${process.env.REACT_APP_SERVER_URL}/todos`
+  );
   return response.data;
 };
 
@@ -11,19 +13,33 @@ const fetchTodos = async (): Promise<todoData[]> => {
 const addTodos: (newtodo: todoData) => Promise<void> = async (
   newtodo: todoData
 ) => {
-  await axios.post<todoData>("http://localhost:4000/todos", newtodo);
+  await axios.post<todoData>(
+    `${process.env.REACT_APP_SERVER_URL}/todos`,
+    newtodo
+  );
 };
 
 // 삭제
-const deleteTodos = async (id: string) => {
-  await axios.delete<todoData>(`http://localhost:4000/todos/${id}`);
+const deleteTodos = async (id: string): Promise<void> => {
+  await axios.delete<todoData>(
+    `${process.env.REACT_APP_SERVER_URL}/todos/${id}`
+  );
 };
 
 // 수정
-const updateTodos = async ({ id, isDone }: { id: string; isDone: boolean }) => {
-  await axios.patch<todoData>(`http://localhost:4000/todos/${id}`, {
-    isDone: !isDone,
-  });
+const updateTodos = async ({
+  id,
+  isDone,
+}: {
+  id: string;
+  isDone: boolean;
+}): Promise<void> => {
+  await axios.patch<todoData>(
+    `${process.env.REACT_APP_SERVER_URL}/todos/${id}`,
+    {
+      isDone: !isDone,
+    }
+  );
 };
 
 export { fetchTodos, addTodos, deleteTodos, updateTodos };
